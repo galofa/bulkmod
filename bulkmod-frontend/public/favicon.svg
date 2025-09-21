@@ -1,0 +1,9 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 80 92.4" xml:space="preserve">
+    <path fill="rgb(97,188,109)" d="M40,46.2 0,23.1 40,0 80,23.1 Z" />
+
+    <path fill="rgb(97,188,109)" d="M0,23.1 40,46.2 40,52 0,28.875 Z" />
+    <path fill="rgb(148,89,59)" d="M0,28.875 40,52 40,92.4 0,69.3 Z" />
+
+    <path fill="rgb(65,168,95)" d="M40,46.2 80,23.1 80,28.875 40,52 Z" />
+    <path fill="rgb(110,60,27)" d="M40,52 80,28.875 80,69.3 40,92.4 Z" />
+</svg>
