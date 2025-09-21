@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(50)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  sessions UserSession[]
+  modlists ModList[]
+  
+  @@map("users")
+}
+
+model UserSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  tokenHash String   @map("token_hash") @db.VarChar(255)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("user_sessions")
+}
+
+model ModList {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(500)
+  isPublic    Boolean  @default(false) @map("is_public")
+  userId      Int      @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mods ModListMod[]
+  
+  @@index([userId])
+  @@index([updatedAt])
+  @@map("modlists")
+}
+
+model ModListMod {
+  id          Int      @id @default(autoincrement())
+  modListId   Int      @map("modlist_id")
+  modSlug     String   @map("mod_slug") @db.VarChar(100)
+  modTitle    String   @map("mod_title") @db.VarChar(255)
+  modIconUrl  String?  @map("mod_icon_url") @db.VarChar(500)
+  modAuthor   String   @map("mod_author") @db.VarChar(100)
+  addedAt     DateTime @default(now()) @map("added_at")
+  
+  // Relations
+  modlist ModList @relation(fields: [modListId], references: [id], onDelete: Cascade)
+  
+  @@unique([modListId, modSlug])
+  @@index([modListId])
+  @@index([addedAt])
+  @@map("modlist_mods")
+}
