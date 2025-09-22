@@ -197,16 +197,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
   };
 
-  if (fatalError) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
-        <h1 className="text-2xl font-bold text-red-400 mb-4">Backend Connection Error</h1>
-        <p className="mb-4">{fatalError}</p>
-        <p className="text-slate-400">Is your backend running? Is the API URL correct?</p>
-      </div>
-    );
-  }
-
   return (
     <AuthContext.Provider value={value}>
       {children}
