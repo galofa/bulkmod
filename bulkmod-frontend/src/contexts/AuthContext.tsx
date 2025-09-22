@@ -38,8 +38,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Add a new state for fatal errors
   const [fatalError, setFatalError] = useState<string | null>(null);
 
-  // Use relative URLs to work with Vite proxy
-  const API_BASE = '/api';
+  // Use environment variable for API URL, fallback to localhost for development
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
 
   useEffect(() => {
     // Check for existing token on app load

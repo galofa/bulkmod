@@ -34,7 +34,7 @@ export function useModDownloader() {
             console.log("Starting download with:", requestData);
 
             // Upload mods
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
             console.log("API URL:", `${API_BASE_URL}/upload-mods-from-list`);
             
             const uploadRes = await fetch(`${API_BASE_URL}/upload-mods-from-list`, {

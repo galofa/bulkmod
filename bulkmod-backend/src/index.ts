@@ -25,7 +25,10 @@ const corsOptions = {
     'http://localhost:5173',  // Vite alternative port
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
-    ...(process.env.CLIENT_ORIGIN ? [process.env.CLIENT_ORIGIN] : [])
+    ...(process.env.CLIENT_ORIGIN ? [process.env.CLIENT_ORIGIN] : []),
+    // Add common Vercel domains for production
+    /^https:\/\/.*\.vercel\.app$/,
+    /^https:\/\/.*\.vercel\.dev$/
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
@@ -72,5 +75,4 @@ process.on('SIGINT', async () => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log(`CORS enabled for origins:`, corsOptions.origin);
 });
