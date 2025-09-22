@@ -89,10 +89,10 @@ export default function ModSearch() {
   }, [debouncedQuery, sort, view]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 text-white overflow-x-hidden">
-      <main className="flex-grow flex justify-center p-6 pt-20">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 text-white overflow-hidden">
+      <main className="flex-1 flex justify-center p-6 pt-20 overflow-y-auto">
         <div className="max-w-5xl w-full">
-          <Card>
+          <Card className="h-fit">
             <CardContent className="p-6">
               <SearchHeader 
                 query={query} 

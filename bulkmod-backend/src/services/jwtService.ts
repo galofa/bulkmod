@@ -38,37 +38,47 @@ export class JwtService {
   
   // Check if token is blacklisted
   static async isTokenBlacklisted(token: string, userId: number): Promise<boolean> {
-    const sessions = await prisma.userSession.findMany({
-      where: {
-        userId,
-        expiresAt: {
-          gt: new Date()
+    try {
+      const sessions = await prisma.userSession.findMany({
+        where: {
+          userId,
+          expiresAt: {
+            gt: new Date()
+          }
+        },
+        select: {
+          tokenHash: true
         }
-      },
-      select: {
-        tokenHash: true
+      });
+      
+      for (const session of sessions) {
+        const isMatch = await bcrypt.compare(token, session.tokenHash);
+        if (isMatch) {
+          return true; // Token is blacklisted
+        }
       }
-    });
-    
-    for (const session of sessions) {
-      const isMatch = await bcrypt.compare(token, session.tokenHash);
-      if (isMatch) {
-        return true; // Token is blacklisted
-      }
+      return false; // Token is not blacklisted
+    } catch (error) {
+      console.error('Error checking token blacklist:', error);
+      // If there's an error checking blacklist, assume token is not blacklisted
+      return false;
     }
-    
-    return false; // Token is not blacklisted
   }
   
   // Clean up expired blacklisted tokens
   static async cleanupExpiredTokens(): Promise<void> {
-    await prisma.userSession.deleteMany({
-      where: {
-        expiresAt: {
-          lt: new Date()
+    try {
+      const result = await prisma.userSession.deleteMany({
+        where: {
+          expiresAt: {
+            lt: new Date()
+          }
         }
-      }
-    });
+      });
+      console.log(`Cleaned up ${result.count} expired blacklisted tokens`);
+    } catch (error) {
+      console.error('Error cleaning up expired tokens:', error);
+    }
   }
   
   // Extract token from Authorization header

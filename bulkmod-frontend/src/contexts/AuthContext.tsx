@@ -67,6 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Token is invalid, remove it
         localStorage.removeItem('token');
         setToken(null);
+        setUser(null);
         setFatalError(null); // Not a fatal error, just unauthenticated
       }
     } catch (error) {

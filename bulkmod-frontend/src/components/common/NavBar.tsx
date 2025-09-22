@@ -31,7 +31,14 @@ export default function NavBar() {
 
   return (
     <nav className="fixed w-full bg-slate-900 border-b border-green-700 py-3 px-6 flex items-center justify-between z-50">
-      <Link to="/" className="text-2xl font-bold text-green-300">BulkMod</Link>
+      <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-green-300">
+        <img 
+          src="/favicon.svg" 
+          alt="BulkMod" 
+          className="w-8 h-8"
+        />
+        BulkMod
+      </Link>
       
       <div className="flex items-center gap-4">
         {/* Only show Download and Search links when user is authenticated */}

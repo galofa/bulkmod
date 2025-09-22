@@ -8,6 +8,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { errorHandler } from "./middleware/errorHandler";
 import { prisma } from "./lib/prisma";
+import { JwtService } from "./services/jwtService";
 
 // Load environment variables
 dotenv.config();
@@ -53,6 +54,15 @@ async function testDatabaseConnection() {
 
 // Initialize database connection
 testDatabaseConnection();
+
+// Set up periodic cleanup of expired blacklisted tokens (every hour)
+setInterval(async () => {
+  try {
+    await JwtService.cleanupExpiredTokens();
+  } catch (error) {
+    console.error('Error during token cleanup:', error);
+  }
+}, 60 * 60 * 1000); // 1 hour
 
 // API routes
 app.use("/api/auth", authRouter);

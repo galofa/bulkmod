@@ -19,6 +19,11 @@ class ModListService {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to create mod list');
     }
     return response.json();
@@ -31,6 +36,12 @@ class ModListService {
       headers: this.getAuthHeaders(),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        // Token is invalid or revoked, clear it and redirect to login
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to fetch mod lists');
     }
     return response.json();
@@ -43,6 +54,11 @@ class ModListService {
       headers: this.getAuthHeaders(),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to fetch mod list');
     }
     return response.json();
@@ -56,6 +72,11 @@ class ModListService {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to update mod list');
     }
   }
@@ -67,6 +88,11 @@ class ModListService {
       headers: this.getAuthHeaders(),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to delete mod list');
     }
   }
@@ -79,6 +105,11 @@ class ModListService {
       body: JSON.stringify(modData),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to add mod to mod list');
     }
   }
@@ -91,6 +122,11 @@ class ModListService {
       body: JSON.stringify({ modSlug }),
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to remove mod from mod list');
     }
   }
@@ -105,6 +141,11 @@ class ModListService {
       }
     );
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to check mod in mod list');
     }
     const data = await response.json();
@@ -121,6 +162,11 @@ class ModListService {
       }
     );
     if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        throw new Error('Authentication failed. Please log in again.');
+      }
       throw new Error('Failed to fetch mod lists containing mod');
     }
     return response.json();
