@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNotification } from '../contexts/NotificationContext';
+import { getAuthHeaders, handleAuthError } from '../utils/authUtils';
 import { ModList } from '../components/modLists/types';
 
 export function useModDownloader() {
@@ -39,19 +40,14 @@ export function useModDownloader() {
             
             const uploadRes = await fetch(`${API_BASE_URL}/upload-mods-from-list`, {
                 method: "POST",
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(requestData),
             });
 
             console.log("Upload response status:", uploadRes.status);
             
             if (!uploadRes.ok) {
-                const errorText = await uploadRes.text();
-                console.error("Upload error response:", errorText);
-                throw new Error(`HTTP error! status: ${uploadRes.status} - ${errorText}`);
+                handleAuthError(uploadRes, 'Failed to upload mods for download');
             }
 
             // Get job ID and total mods
