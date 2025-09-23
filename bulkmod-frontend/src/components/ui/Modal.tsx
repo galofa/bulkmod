@@ -6,6 +6,7 @@ export interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  customHeader?: React.ReactNode;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -16,6 +17,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
     isOpen, 
     onClose, 
     title,
+    customHeader,
     children, 
     size = 'md',
     ...props 
@@ -77,7 +79,11 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
           {...props}
         >
           {/* Header */}
-          {title && (
+          {customHeader ? (
+            <div className="border-b border-green-500/20">
+              {customHeader}
+            </div>
+          ) : title ? (
             <div className="flex items-center justify-between p-6 border-b border-green-500/20">
               <h2 className="text-xl font-semibold text-green-300">{title}</h2>
               <button
@@ -87,7 +93,7 @@ const Modal = React.forwardRef<HTMLDivElement, ModalProps>(
                 <FiX className="w-5 h-5 text-slate-400" />
               </button>
             </div>
-          )}
+          ) : null}
           
           {/* Content */}
           <div className="p-6">
