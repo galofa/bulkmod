@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ModDownloader from "./components/modDownloader/ModDownloader";
 import ModSearch from "./components/modSearch/ModSearch";
 import ModListsPage from "./components/modLists/ModListsPage";
+import PublicModListsPage from "./components/modLists/PublicModListsPage";
 import NavBar from "./components/common/NavBar";
 import LandingPage from "./components/common/LandingPage";
 import NotFound from "./components/common/NotFound";
@@ -50,6 +51,7 @@ export default function App() {
                     </ProtectedRoute>
                   } 
                 />
+                <Route path="/public-modlists" element={<PublicModListsPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
