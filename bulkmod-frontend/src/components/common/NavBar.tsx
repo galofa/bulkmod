@@ -41,12 +41,10 @@ export default function NavBar() {
       </Link>
       
       <div className="flex items-center gap-4">
-        {/* Public modlists link - always visible */}
-        <Link to="/public-modlists" className="text-green-200 hover:text-green-400 font-medium">Public Lists</Link>
-        
         {/* Only show Download and Search links when user is authenticated */}
         {!isLoading && user && (
           <>
+            <Link to="/public-modlists" className="text-green-200 hover:text-green-400 font-medium">Public Lists</Link>
             <Link to="/search" className="text-green-200 hover:text-green-400 font-medium">Search</Link>
             <Link to="/download" className="text-green-200 hover:text-green-400 font-medium">Download</Link>
             <Link to="/modlists" className="text-green-200 hover:text-green-400 font-medium">My Lists</Link>
