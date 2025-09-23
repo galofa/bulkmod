@@ -11,16 +11,22 @@ export const authenticateToken = async (
     const authHeader = req.headers.authorization as string | undefined;
     const token = JwtService.extractTokenFromHeader(authHeader);
     
+    console.log('Auth middleware - token extracted:', token ? 'present' : 'missing');
+    
     if (!token) {
+      console.log('Auth middleware - no token found');
       res.status(401).json({ error: 'Access token required' });
       return;
     }
     
     // Verify token
     const payload = JwtService.verifyToken(token);
+    console.log('Auth middleware - token verified for user:', payload.userId);
     
     // Check if token is blacklisted
     const isBlacklisted = await JwtService.isTokenBlacklisted(token, payload.userId);
+    console.log('Auth middleware - token blacklisted:', isBlacklisted);
+    
     if (isBlacklisted) {
       res.status(401).json({ error: 'Token has been revoked' });
       return;
@@ -30,6 +36,7 @@ export const authenticateToken = async (
     req.user = payload;
     next();
   } catch (error) {
+    console.log('Auth middleware - error:', error);
     if (error instanceof Error && error.message === 'Invalid or expired token') {
       res.status(401).json({ error: 'Invalid or expired token' });
     } else {
