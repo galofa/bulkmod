@@ -38,32 +38,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Add a new state for fatal errors
   const [fatalError, setFatalError] = useState<string | null>(null);
 
-  // Use environment variable for API URL, fallback to localhost for development
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
+  // Use environment variable for API URL, fallback to proxy for development
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
   useEffect(() => {
     // Check for existing token on app load
     const savedToken = localStorage.getItem('token');
+    console.log('AuthContext useEffect - savedToken:', savedToken ? 'present' : 'missing');
+    console.log('AuthContext useEffect - API_BASE:', API_BASE);
     if (savedToken) {
       setToken(savedToken);
       fetchUserProfile(savedToken);
     } else {
       setIsLoading(false);
     }
+
+    // Listen for logout events from other parts of the app
+    const handleLogoutEvent = (event: CustomEvent) => {
+      console.log('AuthContext - received logout event:', event.detail);
+      setUser(null);
+      setToken(null);
+      setFatalError(null);
+    };
+
+    window.addEventListener('auth:logout', handleLogoutEvent as EventListener);
+    
+    return () => {
+      window.removeEventListener('auth:logout', handleLogoutEvent as EventListener);
+    };
   }, []);
 
   const fetchUserProfile = async (authToken: string) => {
     try {
+      console.log('AuthContext.fetchUserProfile - API_BASE:', API_BASE);
+      console.log('AuthContext.fetchUserProfile - token:', authToken ? 'present' : 'missing');
+      
       const response = await fetch(`${API_BASE}/auth/profile`, {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
       });
+      
+      console.log('AuthContext.fetchUserProfile - response status:', response.status);
+      console.log('AuthContext.fetchUserProfile - response ok:', response.ok);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('AuthContext.fetchUserProfile - user data received:', data.user);
         setUser(data.user);
       } else {
+        console.log('AuthContext.fetchUserProfile - response not ok, clearing token');
         // Token is invalid, remove it
         localStorage.removeItem('token');
         setToken(null);
