@@ -3,18 +3,17 @@ import { ModList, CreateModListData } from './types';
 import modListService from '../../services/modListService';
 import { Button, Modal, Input, Alert, Card } from '../ui';
 import ConfirmationModal from '../ui/ConfirmationModal';
-import { FiPlus, FiEdit3, FiTrash2, FiEye, FiEyeOff, FiPackage, FiUpload, FiDownload, FiList } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiEye, FiEyeOff, FiPackage, FiUpload, FiDownload, FiList } from 'react-icons/fi';
 import { useNotification } from '../../contexts/NotificationContext';
 import ModListDetail from './ModListDetail';
 import Footer from '../common/Footer';
 
-const MinecraftBlock = () => (
-  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" className="mx-auto mb-4" xmlns="http://www.w3.org/2000/svg">
-    <rect x="8" y="16" width="48" height="32" rx="6" fill="#8B5C2A" stroke="#3E2723" strokeWidth="3"/>
-    <rect x="12" y="20" width="40" height="24" rx="3" fill="#C2B280" stroke="#3E2723" strokeWidth="2"/>
-    <rect x="20" y="28" width="24" height="8" rx="2" fill="#A1887F" stroke="#3E2723" strokeWidth="1.5"/>
-    <rect x="28" y="36" width="8" height="4" rx="1" fill="#6D4C1B" stroke="#3E2723" strokeWidth="1"/>
-  </svg>
+const EmptyStateIcon = () => (
+  <img 
+    src="/favicon.svg" 
+    alt="BulkMod Logo" 
+    className="w-16 h-16 mx-auto mb-4 opacity-60" 
+  />
 );
 
 export default function ModListsPage() {
@@ -22,7 +21,6 @@ export default function ModListsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -43,10 +41,13 @@ export default function ModListsPage() {
 
   const loadModLists = async () => {
     try {
+      console.log('ModListsPage.loadModLists - starting to load modlists');
       setLoading(true);
       const userModLists = await modListService.getUserModLists();
+      console.log('ModListsPage.loadModLists - modlists loaded:', userModLists);
       setModLists(userModLists);
     } catch (err) {
+      console.error('ModListsPage.loadModLists - error:', err);
       setError('Failed to load mod lists');
     } finally {
       setLoading(false);
@@ -72,29 +73,6 @@ export default function ModListsPage() {
     }
   };
 
-  const handleEditModList = async () => {
-    if (!selectedModList || !newModListData.name.trim()) {
-      setError('Mod List name is required');
-      return;
-    }
-    try {
-      setLoading(true);
-      await modListService.updateModList(selectedModList.id, newModListData);
-      setModLists(modlists.map(m =>
-        m.id === selectedModList.id
-          ? { ...m, ...newModListData }
-          : m
-      ));
-      setShowEditModal(false);
-      setSelectedModList(null);
-      setNewModListData({ name: '', description: '', isPublic: false });
-      setError(null);
-    } catch (err) {
-      setError('Failed to update mod list');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDeleteModList = async (modListId: number) => {
     const modlist = modlists.find(m => m.id === modListId);
@@ -121,15 +99,6 @@ export default function ModListsPage() {
     }
   };
 
-  const openEditModal = (modlist: ModList) => {
-    setSelectedModList(modlist);
-    setNewModListData({
-      name: modlist.name,
-      description: modlist.description || '',
-      isPublic: modlist.isPublic,
-    });
-    setShowEditModal(true);
-  };
 
   const openDetailModal = (modlist: ModList) => {
     setSelectedModList(modlist);
@@ -280,7 +249,7 @@ export default function ModListsPage() {
       )}
       {modlists.length === 0 ? (
         <Card className="text-center py-12">
-          <MinecraftBlock />
+          <EmptyStateIcon />
           <h3 className="text-xl font-semibold text-slate-300 mb-2">No mod lists yet</h3>
           <p className="text-slate-400 mb-6">
             Create your first mod list to start organizing your favorite mods
@@ -372,19 +341,6 @@ export default function ModListsPage() {
                   View Mods
                 </Button>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openEditModal(modlist);
-                  }}
-                  className="flex-1"
-                >
-                  <FiEdit3 className="mr-2" />
-                  Edit
-                </Button>
-                <Button
                   variant="danger"
                   size="sm"
                   onClick={(e) => {
@@ -447,59 +403,6 @@ export default function ModListsPage() {
             </Button>
             <Button
               onClick={() => setShowCreateModal(false)}
-              variant="outline"
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </Modal>
-      {/* Edit Mod List Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title="Edit Mod List"
-      >
-        <div className="space-y-4">
-          <Input
-            label="Mod List Name"
-            value={newModListData.name}
-            onChange={(e) =>
-              setNewModListData({ ...newModListData, name: e.target.value })
-            }
-            placeholder="My Awesome Modpack"
-            required
-          />
-          <Input
-            label="Description (optional)"
-            value={newModListData.description || ''}
-            onChange={(e) =>
-              setNewModListData({ ...newModListData, description: e.target.value })
-            }
-            placeholder="A collection of my favorite mods"
-          />
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={newModListData.isPublic}
-              onChange={(e) =>
-                setNewModListData({ ...newModListData, isPublic: e.target.checked })
-              }
-              className="rounded border-slate-600 bg-slate-700 text-green-400 focus:ring-green-400"
-            />
-            <span className="text-sm">Make mod list public</span>
-          </label>
-          <div className="flex gap-2">
-            <Button
-              onClick={handleEditModList}
-              disabled={loading || !newModListData.name.trim()}
-              className="flex-1"
-            >
-              Update Mod List
-            </Button>
-            <Button
-              onClick={() => setShowEditModal(false)}
               variant="outline"
               className="flex-1"
             >
