@@ -45,7 +45,7 @@ export class UserService {
   }
   
   // Login user
-  static async loginUser(loginData: UserLogin): Promise<Omit<User, 'passwordHash'>> {
+  static async loginUser(loginData: UserLogin): Promise<Omit<any, 'passwordHash'>> {
     const { email, password } = loginData;
     
     // Find user by email OR username

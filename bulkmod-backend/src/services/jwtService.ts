@@ -15,8 +15,12 @@ export class JwtService {
   // Verify JWT token
   static verifyToken(token: string): JwtPayload {
     try {
-      return jwt.verify(token, this.JWT_SECRET) as JwtPayload;
+      console.log('JwtService.verifyToken - attempting to verify token');
+      const payload = jwt.verify(token, this.JWT_SECRET) as JwtPayload;
+      console.log('JwtService.verifyToken - token verified successfully for user:', payload.userId);
+      return payload;
     } catch (error) {
+      console.log('JwtService.verifyToken - token verification failed:', error);
       throw new Error('Invalid or expired token');
     }
   }
