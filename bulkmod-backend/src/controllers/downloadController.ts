@@ -135,7 +135,7 @@ export class DownloadController {
             }
 
             // Convert mods to URLs
-            const modUrls = modList.mods.map(mod => {
+            const modUrls = modList.mods.map((mod: any) => {
                 const isPlugin = mod.modSlug.includes('plugin') || mod.modSlug.includes('worldedit') || mod.modSlug.includes('chunky');
                 return `https://modrinth.com/${isPlugin ? 'plugin' : 'mod'}/${mod.modSlug}`;
             });

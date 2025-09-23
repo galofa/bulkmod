@@ -68,6 +68,39 @@ export class ModListController {
     }
   }
 
+  // Get all public modlists
+  async getPublicModLists(req: Request, res: Response) {
+    try {
+      const modlists = await modListService.getPublicModLists();
+      res.json(modlists);
+    } catch (error) {
+      console.error('Error fetching public mod lists:', error);
+      res.status(500).json({ error: 'Failed to fetch public mod lists' });
+    }
+  }
+
+  // Copy a public modlist to user's account
+  async copyPublicModList(req: Request, res: Response) {
+    try {
+      const userId = (req as any).user?.userId;
+      const modListId = parseInt(req.params.id);
+
+      if (isNaN(modListId)) {
+        return res.status(400).json({ error: 'Invalid mod list ID' });
+      }
+
+      const newModList = await modListService.copyPublicModList(modListId, userId);
+      res.status(201).json(newModList);
+    } catch (error) {
+      console.error('Error copying public mod list:', error);
+      if (error instanceof Error && error.message.includes('not found')) {
+        res.status(404).json({ error: 'Public mod list not found' });
+      } else {
+        res.status(500).json({ error: 'Failed to copy mod list' });
+      }
+    }
+  }
+
   // Update modlist details
   async updateModList(req: Request, res: Response) {
     try {
@@ -79,17 +112,31 @@ export class ModListController {
         return res.status(400).json({ error: 'Invalid mod list ID' });
       }
 
-      const result = await modListService.updateModList(modListId, userId, {
-        name,
-        description,
-        isPublic,
-      });
+      const updateData: any = {};
+      
+      // Only validate name if it's being updated
+      if (name !== undefined) {
+        if (!name || typeof name !== 'string' || !name.trim()) {
+          return res.status(400).json({ error: 'Mod list name is required' });
+        }
+        updateData.name = name.trim();
+      }
+      
+      if (description !== undefined) updateData.description = description;
+      if (isPublic !== undefined) updateData.isPublic = isPublic;
+
+      const result = await modListService.updateModList(modListId, userId, updateData);
 
       if (result.count === 0) {
         return res.status(404).json({ error: 'Mod list not found or access denied' });
       }
 
-      res.json({ message: 'Mod list updated successfully' });
+      // Return the updated modlist data for frontend state consistency
+      const updatedModList = await modListService.getModList(modListId, userId);
+      res.json({ 
+        message: 'Mod list updated successfully',
+        modList: updatedModList
+      });
     } catch (error) {
       console.error('Error updating mod list:', error);
       res.status(500).json({ error: 'Failed to update mod list' });
