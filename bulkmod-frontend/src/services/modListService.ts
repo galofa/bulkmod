@@ -1,7 +1,7 @@
 import { ModList, CreateModListData, AddModToModListData } from '../components/modLists/types';
 import { getAuthHeaders, handleAuthError } from '../utils/authUtils';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 class ModListService {
 
