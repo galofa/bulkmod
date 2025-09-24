@@ -112,73 +112,70 @@ export default function PublicModListsPage() {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {publicModLists.map((modList) => (
-                <Card key={modList.id} className="p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-green-300 mb-2 truncate">
-                        {modList.name}
-                      </h3>
-                      <div className="flex items-center gap-2 text-sm text-slate-400 mb-2">
-                        <FiUser className="w-4 h-4" />
-                        <span>by {modList.user.username}</span>
-                      </div>
-                      {modList.description && (
-                        <p className="text-slate-300 text-sm mb-3 line-clamp-2">
-                          {modList.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm text-slate-400 mb-4">
-                    <div className="flex items-center gap-1">
-                      <FiPackage className="w-4 h-4" />
-                      <span>{modList._count?.mods || 0} mods</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <FiEye className="w-4 h-4" />
-                      <span>Public</span>
-                    </div>
-                  </div>
-
-                  {/* Preview of mods */}
-                  {modList.mods && modList.mods.length > 0 && (
-                    <div className="mb-4">
-                      <div className="flex flex-wrap gap-2">
-                        {modList.mods.slice(0, 3).map((mod, index) => (
-                          <div key={index} className="flex items-center gap-2 bg-slate-800 rounded px-2 py-1 text-xs">
-                            <img
-                              src={mod.modIconUrl || "/favicon.svg"}
-                              alt={mod.modTitle}
-                              className="w-4 h-4 rounded"
-                              onError={(e) => ((e.target as HTMLImageElement).src = "/favicon.svg")}
-                            />
-                            <span className="text-slate-300 truncate max-w-20">
-                              {mod.modTitle}
-                            </span>
-                          </div>
-                        ))}
-                        {modList.mods.length > 3 && (
-                          <div className="bg-slate-700 rounded px-2 py-1 text-xs text-slate-400">
-                            +{modList.mods.length - 3} more
-                          </div>
+                <Card key={modList.id} className="p-6 flex flex-col min-h-[400px]">
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-green-300 mb-2">
+                          {modList.name}
+                        </h3>
+                        <div className="flex items-center gap-2 text-sm text-slate-400 mb-2">
+                          <FiUser className="w-4 h-4" />
+                          <span>by {modList.user.username}</span>
+                        </div>
+                        {modList.description && (
+                          <p className="text-slate-400 text-sm mb-3">
+                            {modList.description}
+                          </p>
                         )}
                       </div>
                     </div>
-                  )}
-
-                  <div className="flex gap-2">
+                    {modList.mods && modList.mods.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-slate-300 mb-2">Recent mods:</h4>
+                        <div className="space-y-2">
+                          {modList.mods.slice(0, 3).map((mod) => (
+                            <div key={mod.id} className="flex items-center gap-2 p-2 bg-slate-800 rounded">
+                              <img
+                                src={mod.modIconUrl || "/favicon.svg"}
+                                alt={mod.modTitle}
+                                className="w-6 h-6 rounded bg-slate-700 object-cover"
+                                onError={(e) => ((e.target as HTMLImageElement).src = "/favicon.svg")}
+                              />
+                              <div className="flex-1 min-w-0">
+                                <a
+                                  href={`https://modrinth.com/${mod.modSlug.includes('plugin') ? 'plugin' : 'mod'}/${mod.modSlug}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-medium text-green-300 hover:underline truncate block"
+                                >
+                                  {mod.modTitle}
+                                </a>
+                                <p className="text-xs text-slate-400">by {mod.modAuthor}</p>
+                              </div>
+                            </div>
+                          ))}
+                          {modList.mods.length > 3 && (
+                            <p className="text-xs text-slate-500 text-center">
+                              +{(modList._count?.mods || modList.mods.length) - 3} more mods
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 mt-auto">
                     <Button
                       onClick={() => handleCopyModList(modList.id)}
                       disabled={copying === modList.id || !user}
                       className="flex-1 flex items-center justify-center gap-2"
-                      variant="outline"
+                      variant="primary"
+                      size="sm"
                     >
                       <FiCopy className="w-4 h-4" />
                       {copying === modList.id ? 'Copying...' : 'Copy to My Lists'}
                     </Button>
                   </div>
-
                   {!user && (
                     <p className="text-xs text-slate-500 mt-2 text-center">
                       Log in to copy this mod list
