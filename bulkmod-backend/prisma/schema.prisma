@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,51 +8,41 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique @db.VarChar(50)
-  email        String   @unique @db.VarChar(255)
-  passwordHash String   @map("password_hash") @db.VarChar(255)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
-  
-  // Relations
-  modlists ModList[]
-  
+  id           Int       @id @default(autoincrement())
+  username     String    @unique @db.VarChar(50)
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  modlists     ModList[]
+
   @@map("users")
 }
 
 model ModList {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  description String?  @db.VarChar(500)
-  isPublic    Boolean  @default(false) @map("is_public")
-  userId      Int      @map("user_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  mods ModListMod[]
-  
-  @@index([userId])
-  @@index([updatedAt])
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(100)
+  description String?      @db.VarChar(500)
+  isPublic    Boolean      @default(false) @map("is_public")
+  userId      Int          @map("user_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  mods        ModListMod[]
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("modlists")
 }
 
 model ModListMod {
-  id          Int      @id @default(autoincrement())
-  modListId   Int      @map("modlist_id")
-  modSlug     String   @map("mod_slug") @db.VarChar(100)
-  modTitle    String   @map("mod_title") @db.VarChar(255)
-  modIconUrl  String?  @map("mod_icon_url") @db.VarChar(500)
-  modAuthor   String   @map("mod_author") @db.VarChar(100)
-  addedAt     DateTime @default(now()) @map("added_at")
-  
-  // Relations
-  modlist ModList @relation(fields: [modListId], references: [id], onDelete: Cascade)
-  
+  id         Int      @id @default(autoincrement())
+  modListId  Int      @map("modlist_id")
+  modSlug    String   @map("mod_slug") @db.VarChar(100)
+  modTitle   String   @map("mod_title") @db.VarChar(255)
+  modIconUrl String?  @map("mod_icon_url") @db.VarChar(500)
+  modAuthor  String   @map("mod_author") @db.VarChar(100)
+  addedAt    DateTime @default(now()) @map("added_at")
+  modlist    ModList  @relation(fields: [modListId], references: [id], onDelete: Cascade)
+
   @@unique([modListId, modSlug])
-  @@index([modListId])
-  @@index([addedAt])
   @@map("modlist_mods")
 }
