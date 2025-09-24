@@ -92,14 +92,11 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-// Logout user (blacklist token)
+// Logout user (stateless - no server-side token invalidation needed)
 router.post('/logout', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const token = req.headers.authorization?.substring(7);
-    if (token && req.user) {
-      await JwtService.blacklistToken(token, req.user.userId);
-    }
-    
+    // With stateless JWT, logout is handled client-side by removing the token
+    // The server doesn't need to do anything special
     res.json({ message: 'Logout successful' });
   } catch (error) {
     res.status(500).json({ error: 'Logout failed' });
@@ -208,11 +205,8 @@ router.post('/refresh', authenticateToken, async (req: AuthenticatedRequest, res
       username: req.user.username
     });
     
-    // Blacklist old token
-    const oldToken = req.headers.authorization?.substring(7);
-    if (oldToken) {
-      await JwtService.blacklistToken(oldToken, req.user.userId);
-    }
+    // Note: With stateless JWT, we don't need to blacklist the old token
+    // The client should replace the old token with the new one
     
     res.json({
       message: 'Token refreshed successfully',

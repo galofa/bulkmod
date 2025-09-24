@@ -23,15 +23,6 @@ export const authenticateToken = async (
     const payload = JwtService.verifyToken(token);
     console.log('Auth middleware - token verified for user:', payload.userId);
     
-    // Check if token is blacklisted
-    const isBlacklisted = await JwtService.isTokenBlacklisted(token, payload.userId);
-    console.log('Auth middleware - token blacklisted:', isBlacklisted);
-    
-    if (isBlacklisted) {
-      res.status(401).json({ error: 'Token has been revoked' });
-      return;
-    }
-    
     // Add user info to request
     req.user = payload;
     next();
@@ -57,11 +48,7 @@ export const optionalAuth = async (
     if (token) {
       try {
         const payload = JwtService.verifyToken(token);
-        const isBlacklisted = await JwtService.isTokenBlacklisted(token, payload.userId);
-        
-        if (!isBlacklisted) {
-          req.user = payload;
-        }
+        req.user = payload;
       } catch (error) {
         // Token is invalid, but we continue without authentication
         console.log('Invalid token in optional auth:', error);

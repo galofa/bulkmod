@@ -55,14 +55,7 @@ async function testDatabaseConnection() {
 // Initialize database connection
 testDatabaseConnection();
 
-// Set up periodic cleanup of expired blacklisted tokens (every hour)
-setInterval(async () => {
-  try {
-    await JwtService.cleanupExpiredTokens();
-  } catch (error) {
-    console.error('Error during token cleanup:', error);
-  }
-}, 60 * 60 * 1000); // 1 hour
+// Note: Token cleanup is no longer needed with stateless JWT
 
 // API routes
 app.use("/api/auth", authRouter);

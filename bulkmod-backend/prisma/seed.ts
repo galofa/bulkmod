@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Clean up existing data
-  await prisma.userSession.deleteMany();
   await prisma.user.deleteMany();
 
   // Create test users
