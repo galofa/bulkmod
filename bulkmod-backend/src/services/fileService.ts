@@ -70,6 +70,6 @@ export class FileService {
     }
 
     static getZipUrl(zipName: string): string {
-        return `${process.env.BASE_URL || "http://localhost:4000"}/downloads/${zipName}`;
+        return `${process.env.DOWNLOAD_URL}/downloads/${zipName}`;
     }
 } 
